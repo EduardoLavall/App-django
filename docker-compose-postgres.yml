@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  psql:
+    container_name: psql
+    image: postgres:13-alpine
+    volumes:
+      - psdb:/var/lib/postgresql/data/
+      #- ./postgres/data:/var/lib/postgresql/data
+    env_file:
+      - ./dotenv_files/.env
+    networks:
+      - django-network
+
+networks:
+  django-network:
+    driver: bridge
+
+volumes:
+  psdb:

@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  django-container:
+    container_name: django-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./django:/django
+      - ./data/web/static:/data/web/static/
+      - ./data/web/media:/data/web/media/
+    env_file:
+      - ./dotenv_files/.env
+    depends_on:
+      - psql
+    networks:
+      - django-network
+  psql:
+    extends:
+      file: docker-compose-postgres.yml
+      service: psql
+
+
+networks:
+  django-network:
+    driver: bridge
+volumes:
+  psdb:

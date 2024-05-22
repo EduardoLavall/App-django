@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  django-container:
+    container_name: django-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./django:/django
+      - ./data/web/static:/data/web/static/
+      - ./data/web/media:/data/web/media/
+    env_file:
+      - ./dotenv_files/.env
+    depends_on:
+      - psql
+    networks:
+      - django-network  # Certifica-se de que todos os serviços estejam na mesma rede
+
+
+  psql:
+    container_name: psql
+    image: postgres:13-alpine
+    volumes:
+      - psdb:/var/lib/postgresql/data/
+      #- ./postgres/data:/var/lib/postgresql/data
+    env_file:
+      - ./dotenv_files/.env
+    networks:
+      - django-network
+
+  #web:
+  #  image: django-image
+  #  command: python manage.py runserver 0.0.0.0:8000
+  #  volumes:
+  #    - ./static:/usr/share/nginx/html/static
+  #    - ./media:/usr/share/nginx/html/media
+  #  networks:
+  #    - django-network
+
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - django-container
+    networks:
+      - django-network
+
+networks:
+  django-network:
+    driver: django-network
+
+
+volumes:
+  psdb:
