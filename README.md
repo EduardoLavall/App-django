@@ -1,4 +1,4 @@
-#Django App base
+# Django App base
  
   docker build --no-cache -t django-app .
   docker run -d --name app-django -v app-volume:/django/data --network net-django app-django
